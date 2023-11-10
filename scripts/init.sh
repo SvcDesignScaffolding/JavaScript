@@ -20,5 +20,11 @@ touch front/Dockerfile \
       front/package.json \
       front/readme.md
 
+touch \
+      backend/app.js                            \
+      backend/app/controllers/ListController.js \
+      backend/app/routes/index.js               \ 
+      backend/package.json
+
 # 提示初始化完成
 echo "项目初始化完成"
