@@ -9,49 +9,63 @@
 * Node.js
 * Express
 
-## 代码结构
+# 前端
 
+1. 目录结构
+```
 frontend/
-├── src/
-│   ├── App.js
-│   ├── components/
-│   │   └── List.js
-│   └── index.js
-└── package.json
+|-- src
+|   |-- App.vue
+|   |-- main.js
+|   |-- components
+|   |   |-- List.vue
+|   |-- router.js
+|-- package.json
+```
+2. 依赖 
+```
+Vue 3 
+Vue Router
+Axios
+```
 
-backend/
-├── config/
-├── node_modules/
-├── app/
-│   ├── controllers/
-│   │   └── ListController.js
-│   ├── models/
-│   │   └── List.js
-│   └── routes/
-│       └── index.js
-└── app.js
+3. 构建命令
 
-* frontend/src/components/List.js 文件定义了 List 组件。组件使用 Axios 来请求 /api/list 路由。
-* backend/app/controllers/ListController.js 文件定义了 ListController 控制器。
-* backend/app/routes/index.js 文件定义了 /api/list 路由。路由使用 ListController 控制器来处理请求。
+- 安装依赖 npm install
+- 启动开发服务器 npm run serve
+- 构建生产版本 npm run build
 
-## API
-/api/list 路由返回一个包含两个用户信息的列表。
+4. curl 测试命令
+# 测试获取列表数据 curl http://localhost:8080
+
+
+# 后端
+
+1. 目录结构
+```
+your-backend-project
+|-- app.js
+|-- package.json
+|-- app
+|   |-- controllers
+|   |   |-- ListController.js
+|   |-- models
+|   |   |-- List.js
+|   |-- routes
+|   |   |-- index.js
+```
+
+2. API 接口说明 GET /api/list: 获取包含两个用户信息的列表
+3. 依赖 Express
+4. 构建命令
+- 安装依赖 npm install
+- 启动服务器 npm start
+5. curl 测试命令
+- 测试获取列表数据
+curl http://localhost:3000/api/list
 
 ## 运行
 
-安装依赖：
-cd backend
-npm install
-
-cd frontend
-npm install
-启动应用程序：
-cd backend
-npm run dev
-
-cd frontend
-npm start
 启动后，访问 http://localhost:3000/，可以看到如下结果：
 
 HTML
@@ -73,3 +87,4 @@ docker run -d -p 80:80 backend
 
 docker run -d -p 3000:3000 frontend
 浏览器访问 http://localhost:3000/ 即可看到效果。
+
