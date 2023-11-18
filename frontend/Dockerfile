@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:18-alpine as builder
+FROM node:21.2.0-alpine as builder
 
 WORKDIR /app
 COPY package.json .
