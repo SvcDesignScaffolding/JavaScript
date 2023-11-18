@@ -1,14 +1,11 @@
 {
-  "name": "backend",
+  "name": "your-backend-project",
   "version": "1.0.0",
-  "description": "Node.js and Express service",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js",
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "^4.17.2",
-    "nodemon": "^2.0.16"
+    "express": "^4.17.1"
   }
 }

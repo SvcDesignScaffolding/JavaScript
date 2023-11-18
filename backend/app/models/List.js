@@ -1,9 +1,1 @@
-class List {
-  constructor(id, name, age) {
-    this.id = id;
-    this.name = name;
-    this.age = age;
-  }
-}
-
-module.exports = List;
+// 在这里定义数据模型，如果有需要的话

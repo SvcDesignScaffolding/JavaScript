@@ -1,18 +1,7 @@
-const express = require('express');
-const ListController = require('./controllers/ListController');
-const List = require('../models/List');
-
+const express = require("express");
 const router = express.Router();
+const ListController = require("../controllers/ListController");
 
-router.get('/api/list', async (req, res) => {
-  const listController = new ListController();
-  const list = await listController.get();
-
-  const response = {
-    list: list.map((item) => new List(item.id, item.name, item.age)),
-  };
-
-  res.json(response);
-});
+router.get("/list", ListController.getList);
 
 module.exports = router;

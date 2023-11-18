@@ -12,6 +12,9 @@ on:
 
 env:
   TZ: Asia/Shanghai
+  REPO: "artifact.onwalk.net"
+  IMAGE: base/${{ github.repository }}
+  TAG: ${{ github.sha }}
 
 jobs:
   build:
@@ -23,11 +26,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc libc6-dev make
+          sudo apt-get install -y nodejs npm 
 
-      - name: Build
-        run: |
-          make DEBUG=no
+      - name: Install Vue3 dependencies and build package
+        working-directory: ./frontend
+        run: npm install && npm run build
+
+      - name: Install Nodejs dependencies and build package
+        working-directory: ./backend
+        run: npm install && npm run build
 
   test:
     runs-on: ubuntu-latest
@@ -38,32 +45,47 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc libc6-dev make
+          sudo apt-get install -y nodejs npm 
 
       - name: Run tests
-        run: |
-          make test
+        run: echo "To do ..."
   docker-image:
     runs-on: ubuntu-latest
-    name: Build image
+    name: Build images
     needs:
       - build
       - test
     steps:
       - uses: actions/checkout@master
 
-      - name: 'Artifact: build && push debian-c-sysinfo image'
+      - name: 'Artifact: build && push frontend image'
         uses: aevea/action-kaniko@master
+        working-directory: ./frontend
         with:
           registry: ${{ secrets.HELM_REPO_REGISTRY }}
           username: ${{ secrets.HELM_REPO_USER }}
           password: ${{ secrets.HELM_REPO_PASSWORD }}
           path: './'
           build_file: 'Dockerfile'
-          image: base/debian-c-sysinfo
-          tag: 0.1
+          image: ${{ env.IMAGE }}-frontend
+          tag: ${{ env.TAG }}
           cache: true
           cache_registry: cache
+
+      - name: 'Artifact: build && push backend image'
+        uses: aevea/action-kaniko@master
+        working-directory: ./backend
+        with:
+          registry: ${{ secrets.HELM_REPO_REGISTRY }}
+          username: ${{ secrets.HELM_REPO_USER }}
+          password: ${{ secrets.HELM_REPO_PASSWORD }}
+          path: './'
+          build_file: 'Dockerfile'
+          image: ${{ env.IMAGE }}-backend
+          tag: ${{ env.TAG }}
+          cache: true
+          cache_registry: cache
+
   setup-k3s:
     runs-on: ubuntu-latest
     needs:
@@ -104,7 +126,7 @@ jobs:
           EOF
           cat hosts/inventory
           ansible-playbook -i hosts/inventory init_k3s_cluster -D
-  deploy-app:
+  deploy-frontend-app:
     runs-on: ubuntu-latest
     needs: [setup-k3s]
 
@@ -139,5 +161,46 @@ jobs:
           ansible_ssh_user=${{ secrets.HOST_USER }}
           ansible_ssh_private_key_file=~/.ssh/id_rsa
           ansible_host_key_checking=False
+          app_image=${{ env.REPO }}/${{ env.IMAGE }}-frontend
+          app_tag=${{ env.TAG }}
+          EOF
+          ansible-playbook -i hosts/inventory deploy_app -D
+  deploy-backend-app:
+    runs-on: ubuntu-latest
+    needs: [setup-k3s]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: update submodule
+        run: |
+          sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
+
+      - name: Deploy
+        working-directory: ./scripts
+        shell: bash
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          sudo apt install jq ansible -y
+
+          mkdir -pv ~/.ssh/
+          cat > ~/.ssh/id_rsa << EOF
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+          sudo chmod 0400 ~/.ssh/id_rsa
+          md5sum ~/.ssh/id_rsa
+
+          mkdir -pv hosts/
+          cat > hosts/inventory << EOF
+          [master]
+          ${{ secrets.HOST_DOMAIN }}               ansible_host=${{ secrets.HOST_IP }}
+
+          [all:vars]
+          ansible_port=22
+          ansible_ssh_user=${{ secrets.HOST_USER }}
+          ansible_ssh_private_key_file=~/.ssh/id_rsa
+          ansible_host_key_checking=False
+          app_image=${{ env.REPO }}/${{ env.IMAGE }}-backend
+          app_tag=${{ env.TAG }}
           EOF
           ansible-playbook -i hosts/inventory deploy_app -D

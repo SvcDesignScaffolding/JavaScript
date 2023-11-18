@@ -1,10 +1,10 @@
-const express = require('express');
-const List = require('../models/List');
+const List = require("../models/List");
 
-class ListController {
-  get() {
-    return await List.find();
-  }
-}
+exports.getList = (req, res) => {
+  const userList = [
+    { id: 1, name: "User 1" },
+    { id: 2, name: "User 2" }
+  ];
 
-module.exports = ListController;
+  res.json(userList);
+};
