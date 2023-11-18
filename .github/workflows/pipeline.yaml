@@ -29,12 +29,16 @@ jobs:
           sudo apt-get install -y nodejs npm 
 
       - name: Install Vue3 dependencies and build package
-        working-directory: ./frontend
-        run: npm install && npm run build
+        run: |
+          cd frontend
+          npm install
+          npm run build
 
       - name: Install Nodejs dependencies and build package
-        working-directory: ./backend
-        run: npm install && npm run build
+        run: |
+          cd backend
+          npm install
+          npm run build
 
   test:
     runs-on: ubuntu-latest
@@ -60,12 +64,11 @@ jobs:
 
       - name: 'Artifact: build && push frontend image'
         uses: aevea/action-kaniko@master
-        working-directory: ./frontend
         with:
           registry: ${{ secrets.HELM_REPO_REGISTRY }}
           username: ${{ secrets.HELM_REPO_USER }}
           password: ${{ secrets.HELM_REPO_PASSWORD }}
-          path: './'
+          path: './frontend'
           build_file: 'Dockerfile'
           image: ${{ env.IMAGE }}-frontend
           tag: ${{ env.TAG }}
@@ -74,12 +77,11 @@ jobs:
 
       - name: 'Artifact: build && push backend image'
         uses: aevea/action-kaniko@master
-        working-directory: ./backend
         with:
           registry: ${{ secrets.HELM_REPO_REGISTRY }}
           username: ${{ secrets.HELM_REPO_USER }}
           password: ${{ secrets.HELM_REPO_PASSWORD }}
-          path: './'
+          path: './backend'
           build_file: 'Dockerfile'
           image: ${{ env.IMAGE }}-backend
           tag: ${{ env.TAG }}
