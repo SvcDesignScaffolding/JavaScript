@@ -61,30 +61,55 @@ your-backend-project
 - 安装依赖 npm install
 - 启动服务器 npm start
 5. curl 测试命令
-- 测试获取列表数据
-curl http://localhost:3000/api/list
+- 测试获取列表数据 curl http://localhost:3000/api/list
 
-## 运行
+# CICD
 
-启动后，访问 http://localhost:3000/，可以看到如下结果：
+- 流水线配置文件 .github/workflows/pipeline.yaml 由四个阶段组成：
 
-HTML
-<ul>
-  <li>张三</li>
-  <li>李四</li>
-</ul>
+1. 构建测试：此阶段从源代码构建 sysinfo 库, 并运行测试套件，以确保 sysinfo 库正常工作。
+2. Docker 镜像：此阶段构建一个包含 sysinfo 库的 Docker 镜像。
+3. 设置 K3s：此阶段在远程服务器上设置 K3s 集群。
+4. 部署应用：此阶段将 sysinfo 库部署到 K3s 集群。
 
-# 部署
+- 触发器, 管道由以下事件触发：
 
-可以使用 Docker 来部署该应用程序。
+- 当打开或更新拉取请求时。
+- 当代码推送到主分支时。
+- 当工作流程手动调度时。
 
-构建镜像：
-docker build -t backend .
+- 环境变量, 管道使用以下环境变量：
 
-docker build -t frontend .
-运行镜像：
-docker run -d -p 80:80 backend
+- TZ: 用于时间戳的时区。
+- REPO: Onwalk 制品存储库的名称。
+- IMAGE: 要构建的 Docker 镜像的名称。
+- TAG: 要分配给 Docker 镜像的标签。
 
-docker run -d -p 3000:3000 frontend
-浏览器访问 http://localhost:3000/ 即可看到效果。
+# API
 
+该 API 提供一个端点用于获取用户列表。
+
+## API 端点
+
+| 端点 | 方法 | 描述 |
+|---|---|---|
+| `/list` | **GET** | 获取用户列表 |
+
+## 示例请求
+
+| 端点 | 请求方法 | 请求参数 | 预期输出 |
+|---|---|---|---|
+| `/list` | **GET** | **无** | `[{"id": 1, "name": "用户 1"}, {"id": 2, "name": "用户 2"}]` |
+
+## 前端
+
+该 API 的前端代码位于 `frontend` 目录中。`List.vue` 组件负责显示用户列表。
+
+## 后端
+
+该 API 的后端代码位于 `backend` 目录中。`ListController.getList()` 方法负责获取用户列表。
+
+# 制品下载地址
+1. GitHub Release: https://github.com/scaffolding-design/python/releases/tag/main
+2. 容器镜像仓库  : artifact.onwalk.net/base/scaffolding-design/python:<git_commit_id>
+2. 容器镜像仓库  : artifact.onwalk.net/base/scaffolding-design/python:<git_commit_id>
