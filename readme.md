@@ -65,20 +65,26 @@ your-backend-project
 
 # CICD
 
-- 流水线配置文件 .github/workflows/pipeline.yaml 由四个阶段组成：
+## 流水线配置文件
 
-1. 构建测试：此阶段从源代码构建 sysinfo 库, 并运行测试套件，以确保 sysinfo 库正常工作。
-2. Docker 镜像：此阶段构建一个包含 sysinfo 库的 Docker 镜像。
+配置文件位于 .github/workflows/pipeline.yaml 由四个阶段组成：
+
+1. 构建测试：此阶段从源代码构建 APP, 并运行测试套件，以确保APP 正常工作。
+2. Docker 镜像：此阶段构建一个包含 APP 的 Docker 镜像。
 3. 设置 K3s：此阶段在远程服务器上设置 K3s 集群。
-4. 部署应用：此阶段将 sysinfo 库部署到 K3s 集群。
+4. 部署应用：此阶段将 APP 部署到 K3s 集群。
 
-- 触发器, 管道由以下事件触发：
+## 触发器
+
+管道由以下事件触发：
 
 - 当打开或更新拉取请求时。
 - 当代码推送到主分支时。
 - 当工作流程手动调度时。
 
-- 环境变量, 管道使用以下环境变量：
+## 环境变量
+
+管道使用以下环境变量：
 
 - TZ: 用于时间戳的时区。
 - REPO: Onwalk 制品存储库的名称。
@@ -110,6 +116,8 @@ your-backend-project
 该 API 的后端代码位于 `backend` 目录中。`ListController.getList()` 方法负责获取用户列表。
 
 # 制品下载地址
-1. GitHub Release: https://github.com/scaffolding-design/python/releases/tag/main
-2. 容器镜像仓库  : artifact.onwalk.net/base/scaffolding-design/python:<git_commit_id>
-2. 容器镜像仓库  : artifact.onwalk.net/base/scaffolding-design/python:<git_commit_id>
+
+1. GitHub Release: [https://github.com/scaffolding-design/javascript/releases/tag/main](https://github.com/scaffolding-design/javascript/releases/tag/main)
+2. 容器镜像仓库  : 
+    - artifact.onwalk.net/base/scaffolding-design/javascript-frontend:<git\_commit\_id>
+    - artifact.onwalk.net/base/scaffolding-design/javascript-backend:<git\_commit\_id>
